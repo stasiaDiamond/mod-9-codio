@@ -1,13 +1,11 @@
 // To accomplish this task, you will need to do the following:
-// Create a mapbox account and get the access token.
+// Create a Mapbox account and get the access token.
 // Add the access token to the mapboxgl instance defined in the mapmarker.js.
 // Create a marker then add it to the map using mapboxgl pre-built functions.
 
 
-// ~ i refuse to enter my credit card into mapbox for this homework assignment
+// ~ i refuse to enter my credit card into Mapbox for this homework assignment
 // ~ the Solution file has one and it passed the codio test
-
-
 function createMapMarker() {
   // ~ to use mapboxgl, they included a MapboxGL JS script link in the HTML file
   // ~ because of this we can use the mapboxgl object to create and interact with maps

@@ -143,34 +143,54 @@ Be sure to parse the received data as text, just like the example, in order to p
 
   // ~ uses forEach Loop to iterate over each of the above urls
   // ~ by using async here, we mean for the following function to always return a Promise
-
-  // ~ let's just barely scratch the surface of a Promise in regards to async/await:
-
-  // okay now for async/await:
-  // ~ since we've just declared that we're doing something asynchronous, we can now use await
-  // ~ using await means the loop will pause and wait for the promise returned to resolve before moving on to the next iteration of whatever it's doing
+  // ~ Promises are an entire face melting situation i'll explain later
   urlArray.forEach(async (url) => {
-    // ~ forEach url that
-    // ~ THESE TRICKY TRICKSTERS! for this particular async/await function they straight up left out AWAIT!!
+    // ~ since we've just declared that we're doing something asynchronous with async, we can now use await
+    // ~ using await means the loop will pause and wait for the Promise returned to resolve before moving on to the next iteration of whatever it's doing
+    // ~ except THESE TRICKY TRICKSTERS! for this particular async/await function they straight up left out AWAIT
     // ~ ugh, the await is "implied" by using .then() since .then() is a method of Promises
-    // ~ why do this to beginners without explaining it?
+    // ~ why do this to beginners without explaining it? 
+    // both styles are acceptable, however many prefer using await bc it explicitly states and clearly indicates what the code is doing 🙄 
     makeRequest(url).then(function (result) {
+
       // STEP 1: Store `result` inside the variable dataArray, this is required to pass this exercise
+
+      // ~ forEach url, an asynchronous arrow function will perform the following operations:
+      // ~ the code inside .then() won't execute until the Promise returned by makeRequest(url) is resolved
+      // ~ so it ensures the loop iterates sequentially, AWAITING each one to finish before moving on the next
+      // ~ once the Promise resolves, the first thing makeRequest(url) does is .push() the result of the Promise into the dataArray
       dataArray.push(result);
+      // ~ if the length of dataArray is exactly equal to the length of the urlArray, perform the following tasks
+      // ~ this helps to check if asynchronous operations have completed before moving on
       if (dataArray.length == urlArray.length) {
+
         // STEP 2: Loop through each item in the `dataArray` and use the logic below by uncommenting the code to see if it is the correct weather data for `Lisbon`
+
+        // ~ secondly, if each async operation has completed, it's going to iterate over the dataArray again
+        // ~ forEach(item) in the dataArray an arrow function will perform the following operations:
         dataArray.forEach((item) => {
+          // ~ because each URL result is returning a JSON string-formatted response, it's being parsed into a JS Object again
+          // ~ it then checks if the newly parsed JSON Object has a property(Key) named "name", that's exactly equal to "Lisbon"
+          // ~ item has changed meaning and now refers to the data fetched by the API
+          // ~ while it's common to use terms like "item" or "element" as generic names, i find it easier for clarity to be very explicit
+          // ~ item could be named 2 different more clear names: one could be arrayItem and one could be dataItem
           if (JSON.parse(item).name == 'Lisbon') {
+
             // You will need to change the itemInDataArray variable to match your own variable that stores the current item in array that you are checking
 
+            // ~ if this returns true and name: "Lisbon" is present, it calls addLisbonDataToDocument()
+            // ~ remember that const addLisbonDataToDocument = (data, dataArr = []) => takes 2 parameters: data, and dataArray
+            // ~ we pass item as the argument to the data parameter and dataArray as the argument to the dataArray parameter
             addLisbonDataToDocument(item, dataArray);
           }
         });
         // STEP 3: Return dataArray
+        // ~ returns the dataArray from the asynchronous function for use outside this long ass wrapper function
         return dataArray;
       }
     });
   });
+  // ~ remember an IIFE must immediately invoke itself, that's the final 2 ()'s here
 })();
 
 //don't change this code
@@ -178,34 +198,62 @@ if (typeof module !== 'undefined') {
   module.exports = { fetchData };
 }
 
+/*
+------Challenges:
 
-// -----Chat explains why and what about a wrapper function:
-// ------Challenges:
-// 1. doing enough research to deeply understand what a wrapper function and async/await do
-// 2. finding out that my beloved asterisk is already part of a  markup language. temporarily, i'll use a ~ symbol from now on until i take the time to learn how to JSDoc correctly
-// 3. notice, none of this was taught nor mentioned: just thrown out there. i truly don't understand how MItxPro Emeritus guarantees what students actually learn!
-// 5. because they give us the Solution Files, so much important info could be 100% skipped over 
-// 6. i think all this work i'm doing to figure out and explain in extreme detail what all this code means might be called reverse engineering...
-// ~ quite the skill!
+1. doing enough research to deeply understand what a wrapper function and async/await do
 
-// 7. face melter: 
-// in a function declaration: async means the function itself is asynchronous and will always return a Promise
-// ~ in a function call: async means the function being called is expected to return a Promise (it does not automatically make the function it's contained in asynchronous by itself) it just allows the use of await for that specific function call
-// ~ a Promise is an Object that has 2 Methods: .then() and .catch()
-// ~ a Promise basically replaces a callback function for asynchronous operations in ES6
-// ~ a Promise is either resolved or rejected
-// ~ this Promise Object is always expected when we use async
-// ~ the Promise Object represents an eventual completion or failure of an asynchronous operation
-// ~ it also will carry with it: the resulting value of said completion or failure
-// ~ when created, a Promise is in a "pending" state
+2. doing enough research to deeply understand what a a dang Promise is. it's much more complicated when not just dealing with returning an HTTP request. def went down quite the rabbit hole
+
+3. finding out that my beloved asterisk is already part of a  markup language. temporarily, i'll use a ~ symbol from now on until i take the time to learn how to JSDoc correctly
+
+4. notice, none of this was taught nor mentioned: just thrown out there. i truly don't understand how MItxPro Emeritus guarantees or even know what nor ho much of this students actually learn. since they give us the Solution Files, so much important info could be 100% skipped over and never understood
+
+5. i think all this work i'm doing to figure out and explain in extreme detail what all this code is doing might be called reverse engineering... which is great! quite the skill!
 
 
-// 
-// ChatGPT
+6. Promise Face Melters: 
 
-// urlArray.forEach(async (url) => { ... });: It iterates over each URL in the urlArray array. The async keyword indicates that the function inside can use await to handle asynchronous operations.
-// makeRequest(url).then(function (result) { ... });: It uses the makeRequest function to fetch data from each URL asynchronously. The then block handles the result of the asynchronous operation.
-// if (dataArray.length == urlArray.length) { ... }: It checks if the length of the dataArray is equal to the length of the urlArray. This is likely to ensure that all data has been fetched before proceeding.
-// Inside the if block, there are commented-out lines with instructions for the steps. It mentions storing the result, looping through each item in the dataArray, and checking if it is the correct weather data for Lisbon. The last step involves calling the addLisbonDataToDocument function with the Lisbon data and the entire dataArray. Finally, it suggests returning the dataArray.
+~ in a function declaration: async means the function itself is asynchronous and will always return a Promise
+
+~ in a function call: async means that the function being called is expected to return a Promise (it does not automatically make the function it's contained in asynchronous by itself) it just allows the use of await for that specific function call
+
+~ a Promise is an Object that has 2 Methods: .then() and .catch()
+~ a Promise basically replaces a callback function for asynchronous operations in ES6
+~ a Promise is either resolved or rejected
+~ a Promise Object is always expected when we use async
+
+~ the Promise Object represents an eventual completion or failure of an asynchronous operation
+~ it also will carry with it: the resulting value of said completion or failure
+~ when created, a Promise is in a "pending" state, once completed successfully it's in "fulfilled" state, and if it encounters an error it's in "rejected" state
+
+
+Callback vs Promise Example:
+
+Callback Style:
+---------------
+function readFileAsynchronously(fileName) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const fileContents = `Contents of ${fileName}`;
+      resolve(fileContents);
+        reject(new Error(`Error reading ${fileName}`));
+    }, 1000);
+  });
+}
+
+Promise Style:
+--------------
+const fileName = "example.txt";
+
+readFileAsynchronously(fileName)
+  .then((contents) => {
+    console.log(`File contents: ${contents}`);
+  })
+  .catch((error) => {
+    console.error(`Error: ${error.message}`);
+  });
+
+*/
 
 
